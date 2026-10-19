@@ -53,6 +53,17 @@ ember-wall ember1:s4821,... --size 3840x2160 --out ~/wall.png
 
 `--set` runs `feh --bg-fill`. The first time, it backs up your existing `~/.fehbg` to `~/.fehbg.pre-ember.bak`.
 
+## Text art for fastfetch
+
+`ember-ascii` renders a recipe as coloured braille art, sized for a terminal logo:
+
+```sh
+ember-ascii ember1:s926625,f1.2,o4,v3,w1,p30,l400,e0.45,g0.5,ccrimson,mring --rows 18 --out ~/.config/fastfetch/logo.txt
+ember-ascii --ansi                     # preview the default emblem in your terminal
+```
+
+The file uses fastfetch's `$1`–`$4` colour markers. The command prints matching `logo.color` values in 24-bit colour, so the art uses your palette's exact colours. Use `--gain`, `--floor` and `--contrast` to tune how bold or dithered it looks.
+
 ## Gallery
 
 The recipes behind the studio's gallery live in [`gallery.json`](gallery.json). Ready-made PNGs are attached to the [latest release](https://github.com/Kemonoo/emberfield/releases/latest).
@@ -63,6 +74,7 @@ The recipes behind the studio's gallery live in [`gallery.json`](gallery.json). 
 |---|---|
 | `emberfield.js` | the generator: noise field, particle tracing, tone mapping. Runs in browsers and Node. |
 | `bin/ember-wall` | the CLI, including a small built-in PNG encoder |
+| `bin/ember-ascii` | braille text art from a recipe |
 | `studio.html` | the studio page |
 | `tools/build.js` | builds the site into `docs/` for GitHub Pages |
 | `tools/thumbs.sh` | renders the gallery thumbnails |

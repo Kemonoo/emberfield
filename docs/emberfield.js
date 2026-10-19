@@ -281,7 +281,21 @@
       return out;
     }
 
-    return { params: P, trace, toRGBA, get progress() { return done / N; }, total: N };
+    // Tone-mapped brightness (0–1) per pixel, without colour or grain. Used for text art.
+    function toValues(out) {
+      const k = K * P.e, g = P.g * 0.75;
+      for (let j = 0; j < H; j++) {
+        const ny = (j / H - 0.5) * 2;
+        for (let i = 0; i < W; i++) {
+          const idx = j * W + i, nx = (i / W - 0.5) * 2;
+          const t = Math.log1p(acc[idx] * k) / span * (1 - g * (nx * nx * 0.55 + ny * ny * 0.45));
+          out[idx] = t > 1 ? 1 : t < 0 ? 0 : t;
+        }
+      }
+      return out;
+    }
+
+    return { params: P, trace, toRGBA, toValues, get progress() { return done / N; }, total: N };
   }
 
   function render(params, W, H) {
