@@ -406,7 +406,7 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8p
 
   async function loadGallery() {
     try {
-      const items = await (await fetch('gallery.json')).json();
+      const items = window.EMBERFIELD_GALLERY || await (await fetch('gallery.json')).json();
       $('grid').innerHTML = '';
       for (const g of items) {
         const p = E.parse(g.recipe);

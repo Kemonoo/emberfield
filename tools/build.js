@@ -27,8 +27,13 @@ const head = `<!doctype html>
 <link rel="icon" href="${favicon}">
 <script>window.EMBERFIELD_SITE = true;</script>
 `;
+const gallery = '<script>window.EMBERFIELD_GALLERY = ' + JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'gallery.json'), 'utf8'))) + ';</script>\n';
+const studio = fs.readFileSync(path.join(root, 'studio.html'), 'utf8');
 
-fs.writeFileSync(path.join(docs, 'index.html'), head + fs.readFileSync(path.join(root, 'studio.html'), 'utf8') + '</html>\n');
+fs.writeFileSync(path.join(docs, 'index.html'), head + gallery + studio + '</html>\n');
+// The Claude artifact version: the same page body, with the gallery inlined but no site-only features.
+fs.mkdirSync(path.join(root, 'build'), { recursive: true });
+fs.writeFileSync(path.join(root, 'build', 'artifact.html'), studio.replace('<style>', gallery + '<style>'));
 for (const f of ['emberfield.js', 'gallery.json']) fs.copyFileSync(path.join(root, f), path.join(docs, f));
 fs.writeFileSync(path.join(docs, '.nojekyll'), '');
 console.log('built docs/');
