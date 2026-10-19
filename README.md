@@ -62,7 +62,7 @@ ember-ascii ember1:s926625,f1.2,o4,v3,w1,p30,l400,e0.45,g0.5,ccrimson,mring --ro
 ember-ascii --ansi                     # preview the default emblem in your terminal
 ```
 
-The file uses fastfetch's `$1`–`$4` colour markers. The command prints matching `logo.color` values in 24-bit colour, so the art uses your palette's exact colours. Use `--gain`, `--floor` and `--contrast` to tune how bold or dithered it looks.
+The file uses fastfetch's `$1`–`$4` colour markers. The command prints matching `logo.color` values in 24-bit colour, so the art uses your palette's exact colours. Use `--gain`, `--floor` and `--contrast` to tune how bold or dithered it looks. Pass `--mask shape.pgm` to pour the swirls into a silhouette (shapes are in `masks/`); `node tools/logos.js` renders a whole set plus a `preview` script into `~/.config/fastfetch/logos/`.
 
 ## Gallery
 

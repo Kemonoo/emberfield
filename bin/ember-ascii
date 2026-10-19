@@ -12,13 +12,15 @@ const HELP = `usage: ember-ascii [recipe] [--rows N] [--cols N] [--gain X] [--ou
   --gain X    brightness multiplier for the dots, default 3.5
   --floor X   brightness below which no dots are drawn, default 0.3
   --contrast X  0 = hard edges, 1 = full dithering, default 0.25
+  --mask FILE a greyscale PGM (P5) image: the art only appears inside its white areas,
+              so the swirls fill that shape (letters, a flame, a heart…)
   --out FILE  write to a file instead of stdout
   --ansi      colour with 24-bit ANSI escapes (for viewing in a terminal) instead of
               fastfetch's $1–$4 markers. Marker colours map to logo.color "1"–"4".`;
 
 const args = process.argv.slice(2);
 let recipe = 'ember1:s77,f1.2,o4,v3,w1,p30,l400,e0.45,g0.5,ccrimson,mring';
-let rows = 18, cols = null, gain = 3.5, floor = 0.3, contrast = 0.25, out = null, ansi = false;
+let mask = null, rows = 18, cols = null, gain = 3.5, floor = 0.3, contrast = 0.25, out = null, ansi = false;
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
   if (a === '-h' || a === '--help') { console.log(HELP); process.exit(0); }
@@ -28,6 +30,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--floor') floor = +args[++i];
   else if (a === '--contrast') contrast = +args[++i];
   else if (a === '--out') out = args[++i];
+  else if (a === '--mask') mask = args[++i];
   else if (a === '--ansi') ansi = true;
   else if (a.startsWith('ember1:')) recipe = a;
   else { console.error(`ember-ascii: unknown argument "${a}"\n\n${HELP}`); process.exit(2); }
@@ -47,6 +50,28 @@ for (let y = 0; y < DH; y++) for (let x = 0; x < DW; x++) {
   for (let j = 0; j < SS; j++) for (let i = 0; i < SS; i++) s += px[(y * SS + j) * W + x * SS + i];
   raw[y * DW + x] = s / (SS * SS);
   dots[y * DW + x] = Math.min(1, raw[y * DW + x] * gain);
+}
+
+// Optional shape mask: swirls fill the white area, with a solid outline so the shape reads.
+if (mask) {
+  const buf = fs.readFileSync(mask);
+  const hdr = buf.toString('latin1', 0, 64).match(/^P5\s+(\d+)\s+(\d+)\s+(\d+)\s/);
+  if (!hdr) { console.error('ember-ascii: --mask must be a binary PGM (P5) file'); process.exit(2); }
+  const mw = +hdr[1], mh = +hdr[2], max = +hdr[3], off = hdr[0].length;
+  const m = new Float32Array(DW * DH);
+  for (let y = 0; y < DH; y++) for (let x = 0; x < DW; x++) {
+    const sx = Math.min(mw - 1, Math.floor((x + 0.5) * mw / DW)), sy = Math.min(mh - 1, Math.floor((y + 0.5) * mh / DH));
+    m[y * DW + x] = buf[off + sy * mw + sx] / max;
+  }
+  const inside = (x, y) => x >= 0 && y >= 0 && x < DW && y < DH && m[y * DW + x] > 0.5;
+  for (let y = 0; y < DH; y++) for (let x = 0; x < DW; x++) {
+    const k = y * DW + x;
+    if (!inside(x, y)) { dots[k] = 0; raw[k] = 0; continue; }
+    const edge = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1);
+    // Inside: a faint base fill plus the swirl texture; edges always on.
+    dots[k] = edge ? 1 : Math.min(1, 0.2 + dots[k] * 0.85);
+    raw[k] = edge ? Math.max(raw[k], 0.5) : raw[k] + 0.05;
+  }
 }
 
 // Ordered dithering turns brightness into dot coverage; a floor keeps faint haze off the art.

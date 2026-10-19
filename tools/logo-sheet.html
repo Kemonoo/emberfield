@@ -1,0 +1,158 @@
+<title>Ember Field Logos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a terminal mock shows the end result first; three labelled sets of logo cards follow.
+   Single dark theme: everything here is shown as it appears in a dark terminal. */
+:root {
+  --bg: #0e0e11; --panel: #131316; --line: #2a2a33; --fg: #e8e8ea; --muted: #8a8a98; --faint: #5c5c6a;
+  --red: #ff2d4a; --red-dim: #b31d33;
+  --display: "Chakra Petch", "Bahnschrift", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--fg); }
+body { font: 15px/1.55 var(--body); padding-inline: 16px; padding-block: 28px 56px; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 40px; }
+h1 { font: 700 30px/1.1 var(--display); letter-spacing: .05em; text-transform: uppercase; margin: 0 0 10px; text-wrap: balance; }
+h1 span { color: var(--red); }
+h2 { font: 700 15px var(--display); letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.lead { color: var(--muted); max-width: 68ch; margin: 0; }
+.lead b { color: var(--fg); font-weight: 600; }
+section { display: grid; gap: 14px; }
+.sub { color: var(--muted); margin: 0; max-width: 68ch; }
+code { font: 13px var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+
+/* Terminal mock */
+.term { background: rgba(19,19,22,.92); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; display: flex; gap: 26px; align-items: flex-start; overflow-x: auto; }
+.info { font: 13.5px/18px var(--mono); white-space: pre; color: #c9c9cf; }
+.info .k { color: var(--red); } .info .t1 { color: #f5f5f7; font-weight: 500; } .info .t2 { color: var(--red); font-weight: 500; } .info .d { color: var(--faint); }
+
+/* Cards */
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid.small { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 980px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid.small { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card canvas { width: 100%; height: auto; display: block; }
+.card .name { font-weight: 600; font-size: 14px; }
+.card .cmd { font: 12px var(--mono); color: var(--faint); overflow-wrap: anywhere; }
+
+/* Abstract: wallpaper → logo pairs */
+.pairs { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 980px) { .pairs { grid-template-columns: minmax(0, 1fr); } }
+.pair { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; min-width: 0; }
+.pair img { width: 100%; aspect-ratio: 16 / 9; height: auto; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
+.pair .arrow { color: var(--faint); font-size: 20px; }
+.pair .foot { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
+.how { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--red-dim); border-radius: 6px; padding: 16px 18px; display: grid; gap: 8px; max-width: 760px; }
+.how p { margin: 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Ember Field <span>logos</span></h1>
+    <p class="lead">Ember Field draws pictures out of thousands of glowing, swirling particle trails. It can output them in two ways: as a <b>wallpaper</b> made of pixels, or as a <b>terminal logo</b> made of braille characters, where each character is a tiny 2×4 grid of dots. These are the logos it made for your fastfetch.</p>
+  </header>
+
+  <section aria-labelledby="h-end">
+    <h2 id="h-end">What it looks like in your terminal</h2>
+    <div class="term">
+      <canvas id="hero" aria-label="Flame logo"></canvas>
+      <div class="info"><span class="t1">kem</span><span class="d">@</span><span class="t2">cachyos-x8664</span>
+<span class="d">─────────────────────────────────</span>
+<span class="k">  os</span>       CachyOS x86_64
+<span class="k">  kernel</span>   Linux 7.2.8-1-cachyos
+<span class="k">  uptime</span>   1 day, 9 hours, 20 mins
+<span class="k">  pkgs</span>     1432 (pacman)
+<span class="k">  shell</span>    zsh 5.9.2
+<span class="k">  wm</span>       i3 4.25.1 (X11)
+<span class="k">  term</span>     alacritty
+<span class="d">─────────────────────────────────</span>
+<span class="k">  cpu</span>      Intel(R) Core(TM) i5-8350U (8) @ 3.60 GHz
+<span class="k">  gpu</span>      Intel UHD Graphics 620 [Integrated]
+<span class="k">  memory</span>   3.00 GiB / 7.62 GiB (39%)
+<span class="k">  disk</span>     89.96 GiB / 236.47 GiB (38%) - btrfs
+<span class="k">  battery</span>  100% [AC Connected]
+<span class="d">─────────────────────────────────</span>
+
+  <span style="color:#565663">●</span> <span style="color:#b31d33">●</span> <span style="color:#ff2d4a">●</span> <span style="color:#7a0f1f">●</span> <span style="color:#e8e8ea">●</span> <span style="color:#f5f5f7">●</span></div>
+    </div>
+    <p class="sub">The Flame logo next to your real fastfetch info. The full-size logos are 18 lines tall, exactly the height of the info column.</p>
+  </section>
+
+  <section aria-labelledby="h-shaped">
+    <h2 id="h-shaped">Shaped logos</h2>
+    <p class="sub">The swirls are poured into a silhouette, so you see a clear shape filled with flowing texture. Any outline works: a letter, an icon or a simple drawing.</p>
+    <div class="grid" id="shaped"></div>
+  </section>
+
+  <section aria-labelledby="h-small">
+    <h2 id="h-small">Small logos</h2>
+    <p class="sub">6 lines tall, the same size as the logo you use now.</p>
+    <div class="grid small" id="small"></div>
+  </section>
+
+  <section aria-labelledby="h-abstract">
+    <h2 id="h-abstract">Abstract logos</h2>
+    <p class="sub">A wallpaper shrunk straight into dots. There's no picture of anything in them, only the swirl pattern itself. These are the ones from my first attempt.</p>
+    <div class="pairs" id="abstract"></div>
+  </section>
+
+  <div class="how">
+    <p><b>Try them in your own terminal:</b> <code>~/.config/fastfetch/logos/preview</code> shows all of them, and <code>~/.config/fastfetch/logos/preview flame</code> shows one.</p>
+    <p>To use one permanently, tell Claude its name. Your fastfetch config gets backed up first.</p>
+  </div>
+</div>
+
+<script>
+const LOGOS = /*LOGOS*/[];
+// Decode braille text with fastfetch $1–$4 colour markers into dots on a canvas.
+function draw(canvas, logo, cw) {
+  const lines = logo.text.replace(/\n$/, '').split('\n');
+  const cols = [...lines[0].replace(/\$\d/g, '')].length, rows = lines.length, ch = cw * 2;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = cols * cw * dpr; canvas.height = rows * ch * dpr;
+  canvas.style.maxWidth = cols * cw + 'px';
+  const g = canvas.getContext('2d'); g.scale(dpr, dpr);
+  const r = Math.max(1, cw * 0.17);
+  const BIT = [[0x01, 0x08], [0x02, 0x10], [0x04, 0x20], [0x40, 0x80]];
+  lines.forEach((line, cy) => {
+    let color = logo.colors[0], cx = 0;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '$' && /\d/.test(line[i + 1])) { color = logo.colors[+line[i + 1] - 1]; i++; continue; }
+      const bits = line.charCodeAt(i) - 0x2800;
+      if (bits > 0) {
+        g.fillStyle = color;
+        for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 2; dx++) if (bits & BIT[dy][dx]) {
+          g.beginPath(); g.arc(cx * cw + (dx + 0.5) * cw / 2, cy * ch + (dy + 0.5) * ch / 4, r, 0, Math.PI * 2); g.fill();
+        }
+      }
+      cx++;
+    }
+  });
+}
+function card(logo, cw) {
+  const el = document.createElement('div'); el.className = 'card';
+  const c = document.createElement('canvas'); c.setAttribute('aria-label', logo.name + ' logo');
+  el.append(c);
+  el.insertAdjacentHTML('beforeend', '<div class="name">' + logo.name + '</div><div class="cmd">preview ' + logo.id + '</div>');
+  draw(c, logo, cw);
+  return el;
+}
+const by = id => LOGOS.find(l => l.id === id);
+draw(document.getElementById('hero'), by('flame'), 9);
+for (const l of LOGOS.filter(l => l.group === 'shaped')) document.getElementById('shaped').append(card(l, 9));
+for (const l of LOGOS.filter(l => l.group === 'small')) document.getElementById('small').append(card(l, 12));
+for (const l of LOGOS.filter(l => l.group === 'abstract')) {
+  const el = document.createElement('div'); el.className = 'pair';
+  el.innerHTML = '<img src="thumbs/' + l.thumb + '.webp" alt="The wallpaper this logo came from"><span class="arrow">→</span><canvas aria-label="' + l.name + ' logo"></canvas>' +
+    '<div class="foot"><span class="name">' + l.name + '</span><span class="cmd">preview ' + l.id + '</span></div>';
+  el.querySelector('canvas').style.width = '100%';
+  draw(el.querySelector('canvas'), l, 6);
+  document.getElementById('abstract').append(el);
+}
+</script>
