@@ -84,8 +84,14 @@ code { font: 13px var(--mono); color: var(--fg); background: var(--panel); borde
     <p class="sub">The Flame logo next to your real fastfetch info. The full-size logos are 18 lines tall, exactly the height of the info column.</p>
   </section>
 
+  <section aria-labelledby="h-mid">
+    <h2 id="h-mid">Mid-size logos</h2>
+    <p class="sub">12 lines tall, two-thirds of the full height. Six new shapes, plus a few in other theme palettes.</p>
+    <div class="grid" id="mid"></div>
+  </section>
+
   <section aria-labelledby="h-shaped">
-    <h2 id="h-shaped">Shaped logos</h2>
+    <h2 id="h-shaped">Full-size logos</h2>
     <p class="sub">The swirls are poured into a silhouette, so you see a clear shape filled with flowing texture. Any outline works: a letter, an icon or a simple drawing.</p>
     <div class="grid" id="shaped"></div>
   </section>
@@ -146,6 +152,7 @@ function card(logo, cw) {
 const by = id => LOGOS.find(l => l.id === id);
 draw(document.getElementById('hero'), by('flame'), 9);
 for (const l of LOGOS.filter(l => l.group === 'shaped')) document.getElementById('shaped').append(card(l, 9));
+for (const l of LOGOS.filter(l => l.group === 'mid')) document.getElementById('mid').append(card(l, 10));
 for (const l of LOGOS.filter(l => l.group === 'small')) document.getElementById('small').append(card(l, 12));
 for (const l of LOGOS.filter(l => l.group === 'abstract')) {
   const el = document.createElement('div'); el.className = 'pair';
