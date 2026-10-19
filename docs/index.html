@@ -240,6 +240,7 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8p
         <div class="pals" id="pals" role="group" aria-label="Palette"></div>
         <div class="ctl"><label for="c-e">Exposure <output id="o-e"></output></label><input type="range" id="c-e" data-k="e" min="0.1" max="4" step="0.05"></div>
         <div class="ctl"><label for="c-g">Vignette <output id="o-g"></output></label><input type="range" id="c-g" data-k="g" min="0" max="1" step="0.05"></div>
+        <div class="ctl"><label for="c-d">Depth <output id="o-d"></output></label><input type="range" id="c-d" data-k="d" min="0" max="1" step="0.05"></div>
       </div>
       <div class="sec">
         <div class="toggle"><span>Preview with desktop</span><button class="switch" id="deskToggle" role="switch" aria-checked="false" aria-label="Preview with desktop"></button></div>
@@ -279,7 +280,7 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8p
   ];
   const MODE_NAMES = { scatter: 'Scatter', ring: 'Ring', horizon: 'Horizon', core: 'Core' };
   const GROUPS = [['Crimson', ['crimson', 'ember', 'ash', 'bloodline']], ['Themes', ['catppuccin', 'gruvbox', 'nord', 'tokyonight', 'dracula', 'rosepine', 'everforest']]];
-  const FMT = { f: v => v.toFixed(2), w: v => v.toFixed(2), e: v => v.toFixed(2) + '×', g: v => Math.round(v * 100) + '%', p: v => v + 'k', l: v => v + ' steps' };
+  const FMT = { f: v => v.toFixed(2), w: v => v.toFixed(2), e: v => v.toFixed(2) + '×', g: v => Math.round(v * 100) + '%', d: v => v ? Math.round(v * 100) + '%' : 'flat', p: v => v + 'k', l: v => v + ' steps' };
 
   const cv = $('cv'), ctx = cv.getContext('2d');
   let RW = 1280, RH = 720, img = null;

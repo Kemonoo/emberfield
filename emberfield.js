@@ -55,8 +55,9 @@
     l: [40, 800, 0],    // trail length (steps)
     e: [0.1, 4, 2],     // exposure
     g: [0, 1, 2],       // vignette
+    d: [0, 1, 2],       // depth: 3D relief lighting (0 = flat, the original look)
   };
-  const DEFAULTS = { s: 4821, f: 1.8, o: 3, v: 2, w: 0.6, p: 24, l: 260, e: 1, c: 'crimson', g: 0.5, m: 'scatter' };
+  const DEFAULTS = { s: 4821, f: 1.8, o: 3, v: 2, w: 0.6, p: 24, l: 260, e: 1, c: 'crimson', g: 0.5, m: 'scatter', d: 0 };
   const ORDER = ['s', 'f', 'o', 'v', 'w', 'p', 'l', 'e', 'g', 'c', 'm'];
 
   function normalize(params) {
@@ -75,7 +76,8 @@
 
   function stringify(params) {
     const P = normalize(params);
-    return 'ember1:' + ORDER.map(k => k + P[k]).join(',');
+    // Depth is only written when used, so recipes made before it existed keep their exact text.
+    return 'ember1:' + ORDER.map(k => k + P[k]).join(',') + (P.d > 0 ? ',d' + P.d : '');
   }
 
   function parse(str) {
@@ -261,6 +263,7 @@
     const span = Math.log1p(14);
 
     function toRGBA(out) {
+      if (P.d > 0) return relief(out);
       const k = K * P.e, g = P.g * 0.75, seed = P.s | 0;
       for (let j = 0; j < H; j++) {
         const ny = (j / H - 0.5) * 2;
@@ -279,6 +282,66 @@
         }
       }
       return out;
+    }
+
+    // 3D look: treat brightness as a height map and light it from the top-left,
+    // with diffuse shading, a glossy highlight and soft shadows cast down-right.
+    function relief(out) {
+      const n = W * H, k = K * P.e, g = P.g * 0.75, seed = P.s | 0, depth = P.d;
+      const t = new Float32Array(n);
+      for (let i = 0; i < n; i++) { const v = Math.log1p(acc[i] * k) / span; t[i] = v > 1 ? 1 : v; }
+      // Smooth the height map (two box-blur passes) so the surface normals are soft.
+      const R = Math.max(1, Math.round(H / 400));
+      let hb = t;
+      for (let pass = 0; pass < 2; pass++) hb = blurBox(blurBox(hb, R, true), R, false);
+      const lx = -0.55, ly = -0.62, lz = 0.56, ll = Math.hypot(lx, ly, lz);
+      const Lx = lx / ll, Ly = ly / ll, Lz = lz / ll;
+      const hx = Lx, hy = Ly, hz = Lz + 1, hl = Math.hypot(hx, hy, hz);
+      const Hx = hx / hl, Hy = hy / hl, Hz = hz / hl;
+      const slope = 10 * depth * H / 1080, flat = 0.42 + 0.9 * Lz;
+      const sd = Math.max(1, Math.round(H / 110)), sox = Math.round(Lx * sd), soy = Math.round(Ly * sd);
+      const top = hexRGB(PALETTES[P.c][PALETTES[P.c].length - 1][1]);
+      for (let j = 0; j < H; j++) {
+        const ny = (j / H - 0.5) * 2, j0 = j > 0 ? j - 1 : j, j1 = j < H - 1 ? j + 1 : j;
+        for (let i = 0; i < W; i++) {
+          const idx = j * W + i, i0 = i > 0 ? i - 1 : i, i1 = i < W - 1 ? i + 1 : i;
+          const gx = (hb[j * W + i1] - hb[j * W + i0]) * slope, gy = (hb[j1 * W + i] - hb[j0 * W + i]) * slope;
+          const inv = 1 / Math.sqrt(gx * gx + gy * gy + 1);
+          const Nx = -gx * inv, Ny = -gy * inv, Nz = inv;
+          const diff = Math.max(0, Nx * Lx + Ny * Ly + Nz * Lz);
+          const sp = Math.max(0, Nx * Hx + Ny * Hy + Nz * Hz);
+          // Shadow: a higher point toward the light shades this one.
+          const si = Math.min(W - 1, Math.max(0, i + sox)), sj = Math.min(H - 1, Math.max(0, j + soy));
+          const occ = Math.min(1, Math.max(0, (hb[sj * W + si] - hb[idx] - 0.03) * 2.2)) * 0.6 * depth;
+          const nx = (i / W - 0.5) * 2;
+          let tt = t[idx] * (1 - g * (nx * nx * 0.55 + ny * ny * 0.45));
+          if (tt > 1) tt = 1; else if (tt < 0) tt = 0;
+          const l = ((tt * (LUT_N - 1)) | 0) * 3;
+          const lit = (1 + ((0.42 + 0.9 * diff) / flat - 1) * depth) * (1 - occ);
+          const gloss = Math.pow(sp, 60) * depth * Math.min(1, hb[idx] * 2.5) * 210;
+          let hsh = Math.imul(idx ^ seed, 0x27d4eb2d); hsh ^= hsh >>> 15;
+          const grain = ((hsh & 255) / 255 - 0.5) * 3, q = idx * 4;
+          for (let c = 0; c < 3; c++) out[q + c] = lut[l + c] * lit + gloss * (0.55 + 0.45 * top[c] / 255) + grain;
+          out[q + 3] = 255;
+        }
+      }
+      return out;
+    }
+
+    function blurBox(src, r, horizontal) {
+      const dst = new Float32Array(src.length), inv = 1 / (2 * r + 1);
+      const outer = horizontal ? H : W, inner = horizontal ? W : H;
+      const step = horizontal ? 1 : W, stride = horizontal ? W : 1;
+      for (let o = 0; o < outer; o++) {
+        const base = o * stride;
+        let acc2 = 0;
+        for (let k2 = -r; k2 <= r; k2++) acc2 += src[base + Math.min(inner - 1, Math.max(0, k2)) * step];
+        for (let x = 0; x < inner; x++) {
+          dst[base + x * step] = acc2 * inv;
+          acc2 += src[base + Math.min(inner - 1, x + r + 1) * step] - src[base + Math.max(0, x - r) * step];
+        }
+      }
+      return dst;
     }
 
     // Tone-mapped brightness (0–1) per pixel, without colour or grain. Used for text art.

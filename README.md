@@ -35,6 +35,7 @@ Post a recipe and anyone can reproduce your wallpaper exactly, or change the see
 | `l` | trail length, in steps | 40–800 |
 | `e` | exposure | 0.1–4 |
 | `g` | vignette | 0–1 |
+| `d` | depth: 3D relief lighting, optional (left out = flat) | 0–1 |
 | `c` | palette (`ember-wall --palettes` lists them) | |
 | `m` | spawn pattern: `scatter`, `ring`, `horizon`, `core` | |
 
