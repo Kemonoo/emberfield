@@ -1,0 +1,18 @@
+[
+  { "id": "drift",      "name": "Drift",         "recipe": "ember1:s4821,f1.8,o3,v2,w0.6,p24,l260,e1,g0.5,ccrimson,mscatter" },
+  { "id": "maelstrom",  "name": "Maelstrom",     "recipe": "ember1:s1907,f1.1,o4,v4,w1.4,p40,l500,e0.8,g0.6,ccrimson,mscatter" },
+  { "id": "ring-of-fire","name": "Ring of fire", "recipe": "ember1:s77,f1.2,o4,v3,w1,p30,l400,e0.45,g0.5,cember,mring" },
+  { "id": "smoulder",   "name": "Smoulder",      "recipe": "ember1:s9001,f3.2,o5,v0,w0,p40,l180,e1.4,g0.7,cash,mscatter" },
+  { "id": "magma",      "name": "Magma",         "recipe": "ember1:s9001,f3.2,o5,v0,w0,p40,l180,e1.1,g0.7,cgruvbox,mscatter" },
+  { "id": "lavender",   "name": "Lavender storm","recipe": "ember1:s1907,f1.1,o4,v4,w1.4,p40,l500,e0.8,g0.6,ccatppuccin,mscatter" },
+  { "id": "aurora",     "name": "Aurora",        "recipe": "ember1:s3110,f2.4,o3,v1,w0.4,p30,l600,e0.7,g0.4,cnord,mhorizon" },
+  { "id": "neon-tide",  "name": "Neon tide",     "recipe": "ember1:s4821,f1.8,o3,v2,w0.6,p24,l260,e0.8,g0.5,ctokyonight,mscatter" },
+  { "id": "halo",       "name": "Halo",          "recipe": "ember1:s77,f1.2,o4,v3,w1,p30,l400,e0.45,g0.5,cdracula,mring" },
+  { "id": "petals",     "name": "Petals",        "recipe": "ember1:s938978,f1.8,o3,v2,w0.6,p24,l260,e1,g0.5,crosepine,mscatter" },
+  { "id": "fern-line",  "name": "Fern line",     "recipe": "ember1:s746831,f2.4,o3,v1,w0.4,p30,l600,e0.7,g0.4,ceverforest,mhorizon" },
+  { "id": "crown",      "name": "Crown",         "recipe": "ember1:s926625,f1.2,o4,v3,w1,p30,l400,e0.45,g0.5,ccrimson,mring" },
+  { "id": "horizon",    "name": "Horizon",       "recipe": "ember1:s3110,f2.4,o3,v1,w0.4,p30,l600,e0.7,g0.4,ccrimson,mhorizon" },
+  { "id": "heart",      "name": "Heart",         "recipe": "ember1:s486062,f1.6,o3,v2,w1.2,p40,l420,e1.1,g0.5,cbloodline,mcore" },
+  { "id": "undertow",   "name": "Undertow",      "recipe": "ember1:s939485,f1.1,o4,v4,w1.4,p40,l500,e0.8,g0.6,ccrimson,mscatter" },
+  { "id": "veins",      "name": "Veins",         "recipe": "ember1:s938978,f1.8,o3,v2,w0.6,p24,l260,e1,g0.5,ccrimson,mscatter" }
+]

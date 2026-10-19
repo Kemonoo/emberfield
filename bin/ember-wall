@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+// ember-wall — render an Ember Field recipe to a PNG wallpaper, optionally set it with feh.
+'use strict';
+const fs = require('fs'), path = require('path'), os = require('os'), zlib = require('zlib');
+const { execFileSync } = require('child_process');
+if (typeof zlib.crc32 !== 'function') {
+  console.error(`ember-wall needs Node.js 22.2 or newer (you have ${process.version}).`);
+  process.exit(1);
+}
+const Ember = require(path.join(fs.realpathSync(__dirname), '..', 'emberfield.js'));
+
+const HELP = `usage: ember-wall [recipe] [--size WxH] [--out file.png] [--set]
+
+  recipe       an ember1:... code copied from the Ember Field studio
+               (omit it for a random seed with default settings)
+  --size WxH   output size, default 1920x1080
+  --out FILE   output path, default ~/Pictures/Wallpapers/ember-<seed>.png
+  --set        apply it with feh --bg-fill (backs up ~/.fehbg the first time)
+  --palettes   list the palette names you can use in a recipe (c<name>)`;
+
+const args = process.argv.slice(2);
+let recipe = null, size = '1920x1080', out = null, set = false;
+for (let i = 0; i < args.length; i++) {
+  const a = args[i];
+  if (a === '-h' || a === '--help') { console.log(HELP); process.exit(0); }
+  else if (a === '--set') set = true;
+  else if (a === '--palettes') { for (const k in Ember.THEMES) console.log(k.padEnd(12) + Ember.THEMES[k].name); process.exit(0); }
+  else if (a === '--size') size = args[++i];
+  else if (a === '--out') out = args[++i];
+  else if (a.startsWith('ember1:')) recipe = a;
+  else { console.error(`ember-wall: unknown argument "${a}"\n\n${HELP}`); process.exit(2); }
+}
+
+const m = /^(\d+)x(\d+)$/.exec(size || '');
+if (!m) { console.error('ember-wall: --size must look like 1920x1080'); process.exit(2); }
+const W = +m[1], H = +m[2];
+
+const params = recipe ? Ember.parse(recipe) : Ember.normalize({ s: Math.floor(Math.random() * 1e6) });
+const code = Ember.stringify(params);
+out = out || path.join(os.homedir(), 'Pictures', 'Wallpapers', `ember-${params.s}.png`);
+
+const t0 = Date.now();
+const rgba = Ember.render(params, W, H);
+
+function encodePNG(w, h, px) {
+  const raw = Buffer.alloc((w * 3 + 1) * h);
+  for (let y = 0; y < h; y++) {
+    const row = y * (w * 3 + 1);
+    for (let x = 0; x < w; x++) {
+      const s = (y * w + x) * 4, d = row + 1 + x * 3;
+      raw[d] = px[s]; raw[d + 1] = px[s + 1]; raw[d + 2] = px[s + 2];
+    }
+  }
+  const chunk = (type, data) => {
+    const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
+    const td = Buffer.concat([Buffer.from(type, 'ascii'), data]);
+    const crc = Buffer.alloc(4); crc.writeUInt32BE(zlib.crc32(td) >>> 0);
+    return Buffer.concat([len, td, crc]);
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4); ihdr[8] = 8; ihdr[9] = 2;
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw, { level: 9 })), chunk('IEND', Buffer.alloc(0)),
+  ]);
+}
+
+fs.mkdirSync(path.dirname(out), { recursive: true });
+fs.writeFileSync(out, encodePNG(W, H, rgba));
+console.log(`${out}  (${W}x${H}, ${((Date.now() - t0) / 1000).toFixed(1)}s)`);
+console.log(`recipe: ${code}`);
+
+if (set) {
+  const fehbg = path.join(os.homedir(), '.fehbg'), bak = fehbg + '.pre-ember.bak';
+  if (fs.existsSync(fehbg) && !fs.existsSync(bak)) {
+    fs.copyFileSync(fehbg, bak);
+    console.log(`backed up ${fehbg} -> ${bak}`);
+  }
+  execFileSync('feh', ['--bg-fill', out], { stdio: 'inherit' });
+  console.log('wallpaper set');
+}
