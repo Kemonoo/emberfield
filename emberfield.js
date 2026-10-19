@@ -255,7 +255,9 @@
 
     const LUT_N = 1024, lut = makeLUT(PALETTES[P.c], LUT_N);
     // Average deposit per pixel ≈ 1 at REF_H; scaled so lines keep their brightness at any size.
-    const K = (W * REF_H) / (N * steps * 0.64);
+    let K = (W * REF_H) / (N * steps * 0.64);
+    // Portrait: trails spread over a narrower frame and come out dim, so lift them (landscape untouched).
+    if (aspect < 1) K *= Math.sqrt((16 / 9) / aspect);
     const span = Math.log1p(14);
 
     function toRGBA(out) {
